@@ -43,7 +43,7 @@ def parseData(data):
         owner_list.append(owner_output)
         desc_list.append(desc_output)
         
-     st.write(pd.DataFrame({
+    st.write(pd.DataFrame({
         'IMEI' : imei_list,
         'ICCID' : iccid_list,
         'CARRIER' : carrier_list,
