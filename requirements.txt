@@ -1,7 +1,5 @@
 pip == 23.1.2
-json >= 2.0.9
 
 streamlit
 requests
-json
 pandas
