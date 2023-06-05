@@ -119,8 +119,8 @@ def deleteDatabase():
     
 # start from here
 st.title("USIM DB")
+st.write("This app is USIM information management tool based on Jay's notion database. Read and write available only.")
 with st.form("INIT"):
-    st.write("This is USIM information based on Jay's notion database. Read and write available only.")
     mode_select = st.radio("Mode select", ["read mode","write mode"])
     select_button = st.form_submit_button("Select")
     
