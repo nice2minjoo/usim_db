@@ -106,10 +106,10 @@ def writeDatabase():
                 "rich_text": [{ "text": { "content": iccid_input } }]
             },
             "CARRIER": {
-                "rich_text": [{ "text": { "content": carrier_input } }]
+                "select": { "name": carrier_input }
             },
             "RAT": {
-                "rich_text": [{ "text": { "content": rat_input } }]
+                "select": { "name": rat_input }
             },
             "OWNER": {
                 "rich_text": [{ "text": { "content": owner_input } }]
