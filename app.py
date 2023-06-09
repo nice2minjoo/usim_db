@@ -29,8 +29,8 @@ def parseData(data):
     for result in data['results']:
         imei_output = result['properties']['IMEI']['rich_text'][0]['plain_text']
         iccid_outout = result['properties']['ICCID']['rich_text'][0]['plain_text']
-        carrier_output = result['properties']['CARRIER']['rich_text'][0]['plain_text']
-        rat_output = result['properties']['RAT']['rich_text'][0]['plain_text']
+        carrier_output = result['properties']['CARRIER']['select']['name']
+        rat_output = result['properties']['RAT']['select']['name']
         owner_output = result['properties']['OWNER']['rich_text'][0]['plain_text']
         if not result['properties']['Description']['rich_text']:
             desc_output = ''
@@ -43,16 +43,36 @@ def parseData(data):
         owner_list.append(owner_output)
         desc_list.append(desc_output)
         
-    st.write(pd.DataFrame({
+    df = pd.DataFrame({
         'IMEI' : imei_list,
         'ICCID' : iccid_list,
         'CARRIER' : carrier_list,
         'RAT' : rat_list,
         'OWNER' : owner_list,
-        'Description' : desc_list
-    }))
-    st.write('Total : {} pcs'.format(len(imei_list)))
+        'Description' : desc_list 
+    })
     
+    filter_container = st.container()
+    
+    with filter_container:
+        if select_type == "ICCID":
+            search_str = st.text_input("Input")
+            str_expr = f"ICCID.str.contains('{search_str}', case=False)"
+            df = df.query(str_expr)
+        
+        elif select_type == "CARRIER":
+            search_str = st.selectbox("Input", ["","SKT","KT","LGU","other"])
+            str_expr = f"CARRIER.str.startswith('{search_str}')" # SKT, KT
+            df = df.query(str_expr)
+        
+        elif select_type == "RAT":
+            search_str = st.selectbox("Input", ["","NB","eMTC","LTE","5G"])
+            str_expr = f"RAT.str.contains('{search_str}', case=False)"
+            df = df.query(str_expr)
+
+    st.dataframe(df, use_container_width=True)
+    st.write(f'Total : :blue[{len(df.index)}] pcs')
+
 def readDatabase():
     payload = {"page_size": 100}
     response = requests.post(notion_api_link_query, json=payload, headers=headers)
@@ -71,7 +91,7 @@ def readDatabase():
     elif '\"status\":401' in response.text:
         err = f'[readDatabase] {response}'
         st.write(err)
-        
+            
 def writeDatabase():
     payload_dict = {
         "parent": {
@@ -113,32 +133,26 @@ def writeDatabase():
     elif '\"status\":401' in response.text:
         err = f'[writeDatabase] {response}'
         st.write(err)
-        
+    
 def deleteDatabase():
     st.write('[TBD] deleteDatabase')
     
 # start from here
 st.title("USIM DB")
 st.write("This app is USIM information management tool based on Jay's notion database. Read and write available only.")
-with st.form("INIT"):
-    mode_select = st.radio("Mode select", ["read mode","write mode"])
-    select_button = st.form_submit_button("Select")
     
-if "read mode" in mode_select:
-    with st.form("read"):
-        read = st.form_submit_button("Read")
-        st.write()
-        
-        if read:           
-            with st.spinner("Waiting for readDatabase..."):
-                readDatabase()
-                
-else:
+tab1, tab2 = st.tabs(["read mode","write mode"])
+with tab1:
+    select_type = st.selectbox("Search with",("ICCID","CARRIER","RAT"))
+    with st.spinner("Waiting for readDatabase..."):
+        readDatabase()
+
+with tab2:
     with st.form("auth"):
         id_input = st.text_input("ID")
         pw_input = st.text_input("PW")
         auth = st.form_submit_button("Submit")
-        
+          
     if id_input == admin_ID and pw_input == admin_PW:
         with st.form("write"):
             imei_input = st.text_input("IMEI")
@@ -151,11 +165,9 @@ else:
             
             if write:
                 if not imei_input or not iccid_input or not owner_input:
-                    # st.write(':red[please fill in the blanks]')
                     st.write("please fill in the blanks!")
                 else:
                     with st.spinner("Waiting for writeDatabase..."):
                         writeDatabase()
-    elif auth:
-        st.write("please check account info!")
-                
+    elif (id_input != admin_ID or pw_input != admin_PW) and auth:
+        st.write("please check account info")
