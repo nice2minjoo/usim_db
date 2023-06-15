@@ -74,8 +74,9 @@ def parseData(data):
     st.write(f'Total : :blue[{len(df.index)}] pcs')
     
 def readDatabase():
-    payload = {"page_size": 100}
-    response = requests.post(notion_api_link_query, json=payload, headers=headers)
+    # payload = {"page_size": 100}
+    # response = requests.post(notion_api_link_query, json=payload, headers=headers)
+    response = requests.post(notion_api_link_query, headers=headers)
     data_bytes = response.content
     data_str = data_bytes.decode('utf-8')
     data = json.loads(data_str)
