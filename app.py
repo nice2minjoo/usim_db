@@ -26,7 +26,7 @@ def parseData(data):
     owner_list = []
     desc_list = []
     
-	for result in data['results']:
+    for result in data['results']:
 		imei_output = result['properties']['IMEI']['rich_text'][0]['plain_text']
 		iccid_outout = result['properties']['ICCID']['rich_text'][0]['plain_text']
 		carrier_output = result['properties']['CARRIER']['select']['name']
