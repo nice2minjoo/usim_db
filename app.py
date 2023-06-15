@@ -26,34 +26,65 @@ def parseData(data):
     owner_list = []
     desc_list = []
     
+	for result in data['results']:
+		imei_output = result['properties']['IMEI']['rich_text'][0]['plain_text']
+		iccid_outout = result['properties']['ICCID']['rich_text'][0]['plain_text']
+		carrier_output = result['properties']['CARRIER']['select']['name']
+		rat_output = result['properties']['RAT']['select']['name']
+		owner_output = result['properties']['OWNER']['rich_text'][0]['plain_text']
+		if not result['properties']['Description']['rich_text']:
+			desc_output = ''
+		else:
+			desc_output = result['properties']['Description']['rich_text'][0]['plain_text']
+		imei_list.append(imei_output)
+		iccid_list.append(iccid_outout)
+		carrier_list.append(carrier_output)
+		rat_list.append(rat_output)
+		owner_list.append(owner_output)
+		desc_list.append(desc_output)
+
+	df = pd.DataFrame({
+		'IMEI' : imei_list,
+		'ICCID' : iccid_list,
+		'CARRIER' : carrier_list,
+		'RAT' : rat_list,
+		'OWNER' : owner_list,
+		'Description' : desc_list 
+	})
+
+	str_expr = f"Module.str.contains('{search_tab1}', case=False)"
+    df = df.query(str_expr)
+    st.dataframe(df, use_container_width=True)
+
+def parseDataex(data):
+    mod_listex = []
+    carrier_listex = []
+    date_listex = []
+    desc_listex = []
+    fDate = 0
+    
     for result in data['results']:
-        imei_output = result['properties']['IMEI']['rich_text'][0]['plain_text']
-        iccid_outout = result['properties']['ICCID']['rich_text'][0]['plain_text']
-        carrier_output = result['properties']['CARRIER']['select']['name']
-        rat_output = result['properties']['RAT']['select']['name']
-        owner_output = result['properties']['OWNER']['rich_text'][0]['plain_text']
+        mod_outputex = result['properties']['Module']['select']['name']
+        carrier_outputex = result['properties']['Carrier']['select']['name']
+        date_outputex = result['properties']['Date']['date']['start']
         if not result['properties']['Description']['rich_text']:
-            desc_output = ''
+            desc_outputex = ''
         else:
-            desc_output = result['properties']['Description']['rich_text'][0]['plain_text']
-        imei_list.append(imei_output)
-        iccid_list.append(iccid_outout)
-        carrier_list.append(carrier_output)
-        rat_list.append(rat_output)
-        owner_list.append(owner_output)
-        desc_list.append(desc_output)
-        
+            desc_outputex = result['properties']['Description']['rich_text'][0]['plain_text']
+        mod_listex.append(mod_outputex)
+        carrier_listex.append(carrier_outputex)
+        date_listex.append(date_outputex)
+        desc_listex.append(desc_outputex)
+    
     df = pd.DataFrame({
-        'IMEI' : imei_list,
-        'ICCID' : iccid_list,
-        'CARRIER' : carrier_list,
-        'RAT' : rat_list,
-        'OWNER' : owner_list,
-        'Description' : desc_list 
+        "Module" : mod_listex,
+        "Carrier" : carrier_listex,
+        "Date" : date_listex,
+        "Description" : desc_listex
     })
-    
+
     filter_container = st.container()
-    
+
     with filter_container:
         if select_type == "ICCID":
             search_str = st.text_input("Input")
