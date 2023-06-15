@@ -42,7 +42,7 @@ def parseData(data):
 		rat_list.append(rat_output)
 		owner_list.append(owner_output)
 		desc_list.append(desc_output)
-
+	
 	df = pd.DataFrame({
 		'IMEI' : imei_list,
 		'ICCID' : iccid_list,
