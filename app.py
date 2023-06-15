@@ -138,6 +138,7 @@ def deleteDatabase():
     st.write('[TBD] deleteDatabase')
     
 # start from here
+st.set_page_config(page_title = "USIM DB")
 st.title("USIM DB")
 st.write("This app is USIM information management tool based on Jay's notion database. Read and write available only.")
     
