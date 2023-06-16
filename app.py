@@ -55,18 +55,23 @@ def parseData(data):
     filter_container = st.container()
     
     with filter_container:
-        if select_type == "ICCID":
+        if select_type == "IMEI":
+            search_str = st.text_input("Input")
+            str_expr = f"IMEI.str.contains('{search_str}', case=False)"
+            df = df.query(str_expr)
+        
+        elif select_type == "ICCID":
             search_str = st.text_input("Input")
             str_expr = f"ICCID.str.contains('{search_str}', case=False)"
             df = df.query(str_expr)
         
         elif select_type == "CARRIER":
             search_str = st.selectbox("Input", ["","SKT","KT","LGU","other"])
-            str_expr = f"CARRIER.str.startswith('{search_str}')" # SKT, KT
+            str_expr = f"CARRIER.str.startswith('{search_str}')" # to distinguish SKT, KT
             df = df.query(str_expr)
         
         elif select_type == "RAT":
-            search_str = st.selectbox("Input", ["","NB","eMTC","LTE","5G"])
+            search_str = st.selectbox("Input", ["","NB","eMTC","LTE","5G","other"])
             str_expr = f"RAT.str.contains('{search_str}', case=False)"
             df = df.query(str_expr)
 
@@ -145,7 +150,7 @@ st.write("This app is USIM information management tool based on Jay's notion dat
     
 tab1, tab2 = st.tabs(["read mode","write mode"])
 with tab1:
-    select_type = st.selectbox("Search with",("ICCID","CARRIER","RAT"))
+    select_type = st.selectbox("Search with",("IMEI","ICCID","CARRIER","RAT"))
     with st.spinner("Waiting for readDatabase..."):
         readDatabase()
         
@@ -160,7 +165,7 @@ with tab2:
             imei_input = st.text_input("IMEI")
             iccid_input = st.text_input("ICCID")
             carrier_input = st.selectbox("CARRIER", ["SKT","KT","LGU","other"])
-            rat_input = st.selectbox("RAT", ["NB","eMTC","LTE","5G"])
+            rat_input = st.selectbox("RAT", ["NB","eMTC","LTE","5G","other"])
             owner_input = st.text_input("OWNER")
             desc_input = st.text_input("Description")
             write = st.form_submit_button("Write")
